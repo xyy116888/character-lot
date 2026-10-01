@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>先天底色・后天塑造 | 你的性格说明书</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f5f0e8'/%3E%3Ccircle cx='32' cy='32' r='22' stroke='%23e8b86b' stroke-width='2' fill='none'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%23e8b86b'/%3E%3Ccircle cx='32' cy='14' r='2' fill='%23e8b86b'/%3E%3Ccircle cx='50' cy='32' r='2' fill='%23c9a0dc'/%3E%3Ccircle cx='32' cy='50' r='2' fill='%23e8b86b'/%3E%3Ccircle cx='14' cy='32' r='2' fill='%23c9a0dc'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+/* ===== 全局重置与变量 ===== */
+:root {
+  --bg-deep: #f5f0e8;
+  --bg-mid: #ede6da;
+  --bg-light: #faf6f0;
+  --card-bg: rgba(255, 255, 255, 0.85);
+  --card-border: rgba(200, 160, 90, 0.25);
+  --gold: #c8963e;
+  --gold-soft: #d4a84f;
+  --purple-soft: #9b7bb8;
+  --pink-soft: #c97a8e;
+  --text-main: #2d2a26;
+  --text-sub: #6b6560;
+  --text-dim: #9a948c;
+  --shadow-glow: 0 8px 32px rgba(180, 150, 100, 0.15);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg-deep);
+  color: var(--text-main);
+  overflow-x: hidden;
+  position: relative;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(200, 160, 90, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(155, 123, 184, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(250, 246, 240, 0.8) 0%, var(--bg-deep) 70%);
+  min-height: 100vh;
+}
+
+/* 星空背景 */
+.stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  background: #d4a84f;
+  border-radius: 50%;
+  animation: twinkle var(--dur) ease-in-out infinite;
+  opacity: 0;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.3); }
+}
+
+/* ===== 视图容器 ===== */
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+}
+
+.view {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+  animation: fadeIn 0.5s ease;
+}
+
+.view.active {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* ===== 首页 ===== */
+.home-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 24px;
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+
+.home-icon svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 20px rgba(232, 184, 107, 0.4));
+}
+
+.home-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #b8862e 0%, var(--gold) 50%, var(--purple-soft) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.home-subtitle {
+  font-size: 15px;
+  color: var(--text-sub);
+  text-align: center;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+}
+
+.home-desc {
+  font-size: 14px;
+  color: var(--text-sub);
+  text-align: center;
+  line-height: 1.8;
+  margin-bottom: 40px;
+  max-width: 320px;
+}
+
+.home-desc strong {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+.start-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 18px 40px;
+  background: linear-gradient(135deg, var(--gold) 0%, #b8862e 100%);
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: 'Noto Sans SC', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(232, 184, 107, 0.35);
+  letter-spacing: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.start-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.start-btn:hover::before {
+  left: 100%;
+}
+
+.start-btn:active {
+  transform: scale(0.97);
+}
+
+.home-meta {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--text-dim);
+  display: flex;
+  gap: 16px;
+}
+
+.home-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== 答题页 ===== */
+.quiz-card {
+  width: 100%;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 32px 24px 28px;
+  box-shadow: var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.quiz-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.quiz-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.quiz-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 4px;
+  letter-spacing: 2px;
+}
+
+.quiz-subtitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.question-text {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.7;
+  text-align: center;
+  margin-bottom: 28px;
+  color: var(--text-main);
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.option-card {
+  width: 100%;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(200, 160, 90, 0.15);
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: left;
+  font-family: 'Noto Sans SC', sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.option-card:hover {
+  background: rgba(200, 160, 90, 0.08);
+  border-color: rgba(200, 160, 90, 0.35);
+  transform: translateX(4px);
+}
+
+.option-card:active {
+  transform: scale(0.98);
+}
+
+.option-card.selected {
+  background: linear-gradient(135deg, rgba(200, 160, 90, 0.12) 0%, rgba(155, 123, 184, 0.08) 100%);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.option-card .option-label {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  background: rgba(200, 160, 90, 0.12);
+  border-radius: 50%;
+  font-size: 12px;
+  color: var(--gold);
+  margin-right: 10px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.option-card.selected .option-label {
+  background: var(--gold);
+  color: #fff;
+}
+
+.quiz-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.question-counter {
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.question-counter strong {
+  color: var(--gold);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(200, 160, 90, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--purple-soft), var(--gold));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 10px rgba(232, 184, 107, 0.5);
+}
+
+.back-btn {
+  padding: 10px 28px;
+  background: transparent;
+  border: 1px solid rgba(200, 160, 90, 0.25);
+  border-radius: 30px;
+  color: var(--text-sub);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.back-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.back-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ===== 加载页 ===== */
+.loading-view {
+  text-align: center;
+}
+
+.loading-ring {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 32px;
+  position: relative;
+}
+
+.loading-ring svg {
+  width: 100%;
+  height: 100%;
+  animation: spin 3s linear infinite;
+}
+
+.loading-ring .inner {
+  animation: spin 2s linear infinite reverse;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+}
+
+.loading-text {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 12px;
+  letter-spacing: 3px;
+}
+
+.loading-sub {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.8;
+  max-width: 280px;
+}
+
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ===== 结果页 ===== */
+.result-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+.result-hero {
+  text-align: center;
+  padding: 40px 24px 32px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  border-radius: 28px;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(200, 160, 90, 0.06) 0%, transparent 60%);
+  animation: pulse 6s ease-in-out infinite;
+}
+
+.result-type-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: linear-gradient(135deg, rgba(200, 160, 90, 0.12), rgba(155, 123, 184, 0.1));
+  border: 1px solid rgba(200, 160, 90, 0.35);
+  border-radius: 30px;
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.result-name {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 36px;
+  font-weight: 900;
+  line-height: 1.3;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #b8862e 0%, var(--gold) 40%, var(--purple-soft) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  z-index: 1;
+}
+
+.result-slogan {
+  font-size: 15px;
+  color: var(--text-sub);
+  line-height: 1.8;
+  max-width: 300px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.result-section {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(200, 160, 90, 0.12);
+  border-radius: 20px;
+  padding: 24px 20px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gold);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: 1px;
+}
+
+.section-title::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  background: linear-gradient(180deg, var(--gold), var(--purple-soft));
+  border-radius: 2px;
+}
+
+.section-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-main);
+}
+
+.section-text p {
+  margin-bottom: 10px;
+}
+
+.section-text p:last-child {
+  margin-bottom: 0;
+}
+
+.section-text .highlight {
+  color: var(--gold);
+  font-weight: 500;
+}
+
+/* 雷达图 */
+.radar-container {
+  width: 100%;
+  height: 320px;
+  margin: 0 auto;
+}
+
+/* 维度得分明细 */
+.score-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.score-name {
+  width: 80px;
+  font-size: 13px;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+
+.score-bar-wrap {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.score-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s ease;
+}
+
+.score-value {
+  width: 36px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* 天赋与短板 */
+.trait-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.trait-box {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(200, 160, 90, 0.12);
+}
+
+.trait-box.gift {
+  border-color: rgba(200, 160, 90, 0.3);
+  background: linear-gradient(135deg, rgba(200, 160, 90, 0.06), transparent);
+}
+
+.trait-box.weak {
+  border-color: rgba(201, 122, 142, 0.3);
+  background: linear-gradient(135deg, rgba(201, 122, 142, 0.06), transparent);
+}
+
+.trait-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+  letter-spacing: 1px;
+}
+
+.trait-box.gift .trait-label { color: var(--gold); }
+.trait-box.weak .trait-label { color: var(--pink-soft); }
+
+.trait-content {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-main);
+}
+
+/* 适配/避雷 */
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.match-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.match-item.good {
+  border-left: 3px solid var(--gold);
+}
+
+.match-item.bad {
+  border-left: 3px solid var(--pink-soft);
+}
+
+.match-tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  flex-shrink: 0;
+  letter-spacing: 1px;
+}
+
+.match-item.good .match-tag {
+  background: rgba(200, 160, 90, 0.12);
+  color: var(--gold);
+}
+
+.match-item.bad .match-tag {
+  background: rgba(201, 122, 142, 0.1);
+  color: var(--pink-soft);
+}
+
+.match-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+}
+
+.match-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+/* 心理提示 */
+.tip-box {
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(155, 123, 184, 0.08), rgba(200, 160, 90, 0.06));
+  border: 1px solid rgba(155, 123, 184, 0.2);
+  border-radius: 16px;
+  position: relative;
+}
+
+.tip-box::before {
+  content: '✦';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 18px;
+  color: var(--purple-soft);
+  opacity: 0.5;
+}
+
+.tip-text {
+  font-size: 14px;
+  line-height: 1.9;
+  color: var(--text-main);
+  font-style: italic;
+}
+
+/* 深度解读 */
+.deep-read {
+  font-size: 14px;
+  line-height: 2;
+  color: var(--text-main);
+}
+
+.deep-read h4 {
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  color: var(--gold);
+  margin: 18px 0 8px;
+  font-weight: 600;
+}
+
+.deep-read h4:first-child {
+  margin-top: 0;
+}
+
+.deep-read p {
+  margin-bottom: 10px;
+}
+
+/* 分享文案 */
+.share-text-box {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(200, 160, 90, 0.15);
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-sub);
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* 操作按钮 */
+.result-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding-bottom: 40px;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 14px 20px;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--gold), #d4a04a);
+  color: #1a1428;
+  box-shadow: 0 4px 20px rgba(232, 184, 107, 0.3);
+}
+
+.action-btn.secondary {
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text-main);
+  border: 1px solid rgba(200, 160, 90, 0.2);
+}
+
+.action-btn:active {
+  transform: scale(0.96);
+}
+
+.retest-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  background: transparent;
+  border: 1px solid rgba(200, 160, 90, 0.25);
+  border-radius: 30px;
+  color: var(--text-dim);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Noto Sans SC', sans-serif;
+}
+
+.retest-btn:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 14px 28px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--gold);
+  border-radius: 12px;
+  color: var(--gold);
+  font-size: 14px;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+/* 响应式 */
+@media (max-width: 380px) {
+  .home-title { font-size: 28px; }
+  .result-name { font-size: 30px; }
+  .question-text { font-size: 16px; }
+  .trait-grid { grid-template-columns: 1fr; }
+}
+
+@media (min-width: 768px) {
+  .app { padding: 40px 20px; }
+  .quiz-card { padding: 40px 32px 32px; }
+  .question-text { font-size: 19px; }
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(232, 184, 107, 0.3);
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<!-- 星空背景 -->
+<div class="stars" id="stars"></div>
+
+<div class="app">
+  <!-- ===== 视图：首页 ===== -->
+  <div class="view active" id="view-home">
+    <div class="home-icon">
+      <svg viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="42" stroke="#e8b86b" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="50" cy="50" r="32" stroke="#c9a0dc" stroke-width="1" opacity="0.4"/>
+        <circle cx="50" cy="50" r="22" stroke="#e8b86b" stroke-width="0.8" opacity="0.3"/>
+        <path d="M50 8 L50 92 M8 50 L92 50" stroke="#e8b86b" stroke-width="0.8" opacity="0.3"/>
+        <path d="M20 20 L80 80 M80 20 L20 80" stroke="#c9a0dc" stroke-width="0.6" opacity="0.25"/>
+        <circle cx="50" cy="50" r="6" fill="#e8b86b" opacity="0.8"/>
+        <circle cx="50" cy="14" r="2.5" fill="#e8b86b"/>
+        <circle cx="86" cy="50" r="2.5" fill="#c9a0dc"/>
+        <circle cx="50" cy="86" r="2.5" fill="#e8b86b"/>
+        <circle cx="14" cy="50" r="2.5" fill="#c9a0dc"/>
+      </svg>
+    </div>
+    <h1 class="home-title">你的性格类型<br>是哪种？</h1>
+    <p class="home-subtitle">— 先天底色 · 后天塑造 —</p>
+    <p class="home-desc">
+      刷到就是缘分！<br>
+      25 道题，看穿你的<strong>性格底色</strong>和<strong>成长卡点</strong>，<br>
+      看看你是天选摆烂家还是后天操盘手～
+    </p>
+    <button class="start-btn" onclick="startQuiz()">立 刻 测 试</button>
+    <div class="home-meta">
+      <span>25 道题</span>
+      <span>3 分钟出结果</span>
+      <span>8 种性格类型</span>
+    </div>
+  </div>
+
+  <!-- ===== 视图：答题页 ===== -->
+  <div class="view" id="view-quiz">
+    <div class="quiz-card">
+      <div class="quiz-header">
+        <div class="quiz-title" id="quiz-title">先天底色・后天塑造</div>
+        <div class="quiz-subtitle" id="quiz-subtitle">你的性格说明书</div>
+      </div>
+      <div class="question-text" id="question-text"></div>
+      <div class="options-list" id="options-list"></div>
+      <div class="quiz-footer">
+        <div class="question-counter">第 <strong id="current-num">1</strong> / 25 题</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 4%"></div>
+        </div>
+        <button class="back-btn" id="back-btn" onclick="goBack()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          上一题
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 视图：加载页 ===== -->
+  <div class="view loading-view" id="view-loading">
+    <div class="loading-ring">
+      <svg viewBox="0 0 100 100" fill="none">
+        <circle cx="50" cy="50" r="45" stroke="#e8b86b" stroke-width="1.5" stroke-dasharray="70 30" opacity="0.7"/>
+        <circle cx="50" cy="50" r="35" stroke="#c9a0dc" stroke-width="1" stroke-dasharray="50 50" opacity="0.5"/>
+      </svg>
+      <svg class="inner" viewBox="0 0 50 50" fill="none">
+        <circle cx="25" cy="25" r="20" stroke="#e8b86b" stroke-width="1.5" stroke-dasharray="40 20" opacity="0.8"/>
+        <circle cx="25" cy="25" r="4" fill="#e8b86b"/>
+      </svg>
+    </div>
+    <div class="loading-text">正在生成你的性格报告</div>
+    <div class="loading-sub">
+      别急，马上就好～<span class="loading-dots"><span></span><span></span><span></span></span><br>
+      别急，命盘需要慢慢转
+    </div>
+  </div>
+
+  <!-- ===== 视图：结果页 ===== -->
+  <div class="view" id="view-result">
+    <div class="result-container" id="result-capture">
+      <!-- 结果头部 -->
+      <div class="result-hero">
+        <div class="result-type-badge" id="result-badge">性格类型</div>
+        <h2 class="result-name" id="result-name">—</h2>
+        <p class="result-slogan" id="result-slogan">—</p>
+      </div>
+
+      <!-- 十维雷达图 -->
+      <div class="result-section">
+        <div class="section-title">性格十维雷达</div>
+        <div class="radar-container" id="radar-chart"></div>
+      </div>
+
+      <!-- 维度得分明细 -->
+      <div class="result-section">
+        <div class="section-title">维度得分明细</div>
+        <div class="score-list" id="score-list"></div>
+      </div>
+
+      <!-- 天赋与短板 -->
+      <div class="result-section">
+        <div class="section-title">先天天赋 & 社交短板</div>
+        <div class="trait-grid">
+          <div class="trait-box gift">
+            <div class="trait-label">✦ 先天天赋</div>
+            <div class="trait-content" id="trait-gift">—</div>
+          </div>
+          <div class="trait-box weak">
+            <div class="trait-label">✧ 社交短板</div>
+            <div class="trait-content" id="trait-weak">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 适配/避雷人格 -->
+      <div class="result-section">
+        <div class="section-title">适配 & 避雷人格</div>
+        <div class="match-list" id="match-list"></div>
+      </div>
+
+      <!-- 核心特质 -->
+      <div class="result-section">
+        <div class="section-title">核心特质</div>
+        <div class="section-text" id="core-trait"></div>
+      </div>
+
+      <!-- 痛点戳心 -->
+      <div class="result-section">
+        <div class="section-title">痛点戳心</div>
+        <div class="section-text" id="pain-point"></div>
+      </div>
+
+      <!-- 形成原因 -->
+      <div class="result-section">
+        <div class="section-title">形成原因</div>
+        <div class="section-text" id="cause"></div>
+      </div>
+
+      <!-- 深度解读 -->
+      <div class="result-section">
+        <div class="section-title">深度解读</div>
+        <div class="deep-read" id="deep-read"></div>
+      </div>
+
+      <!-- 心理学参考 -->
+      <div class="result-section">
+        <div class="section-title">心理学参考</div>
+        <div class="section-text" id="psych-ref"></div>
+      </div>
+
+      <!-- 心理提示 -->
+      <div class="result-section">
+        <div class="section-title">给你的一句话</div>
+        <div class="tip-box">
+          <div class="tip-text" id="psych-tip">—</div>
+        </div>
+      </div>
+
+      <!-- 分享文案 -->
+      <div class="result-section">
+        <div class="section-title">分享文案</div>
+        <div class="share-text-box" id="share-text"></div>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="result-actions">
+      <button class="action-btn primary" onclick="copyResult()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        一键复制
+      </button>
+      <button class="action-btn secondary" onclick="savePNG()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        保存图片
+      </button>
+    </div>
+    <button class="retest-btn" onclick="restartQuiz()">重新测试</button>
+  </div>
+</div>
+
+<script>
+/* ===== 全局状态 ===== */
+let currentQuestion = 0;
+let answers = [];
+let radarChart = null;
+let resultData = null;
+
+/* ===== 十维定义 ===== */
+const DIMENSIONS = [
+  { name: '宿命认同度', desc: '相信先天注定的程度' },
+  { name: '改行动力', desc: '主动改变命运的意愿' },
+  { name: '标签挣脱度', desc: '不被性格标签束缚的程度' },
+  { name: '决策自主度', desc: '人生选择靠自己的程度' },
+  { name: '心性可塑性', desc: '相信性格可以改变的程度' },
+  { name: '意义稳定度', desc: '努力意义感不被动摇的程度' },
+  { name: '先天接纳度', desc: '接纳自身起点的程度' },
+  { name: '后天掌控感', desc: '对人生的掌控信心' },
+  { name: '挫折复原力', desc: '从失败中恢复的速度' },
+  { name: '成长开放度', desc: '拥抱新可能的程度' }
+];
+
+/* ===== 8种命格类型 ===== */
+const TYPES = {
+  fated_lazy: {
+    badge: '宿命型 · 金',
+    name: '天选摆烂家',
+    slogan: '「命里有时终须有，命里无时莫强求」是你的人生座右铭',
+    coreTrait: '你对「命运」有一种近乎虔诚的相信。天生的敏感度让你总能从生活细节里读出「天意」的痕迹——一次面试失败、一段感情结束、一个错过的机会，你都会在心里默默归因为「这就是命」。你不是不努力，而是努力之前先算了一卦，发现「卦象不好」就先泄了一半气。',
+    painPoint: '刷到八字分析说你「财运一般」，你默默关掉了刚打开的求职APP；朋友劝你试试新赛道，你摇摇头说「我没那个命」；看到别人升职加薪，你心里想的是「人家八字好，比不了」。最扎心的是，你其实比谁都清楚自己在逃避，但「命不好」这三个字太好用了，好用到舍不得放下。',
+    cause: '你的宿命感来自对不确定性的深层恐惧。用「先天注定」给复杂的人生一个简化解释，就不用面对「努力了也可能失败」的残酷可能。本质上，你是在用宿命论提前自我保护——先承认自己不行，就不会因为真的不行而受伤。',
+    gift: '直觉敏锐，对环境和人心的感知力极强；心态佛系，不容易被焦虑裹挟；接受力强，能在逆境中保持平静。',
+    weak: '容易自我设限，还没开始就先否定；行动力不足，想法多执行少；在机会面前习惯性退缩，事后又后悔。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '对方的行动力能带动你走出舒适区' },
+      { type: 'good', name: '人间清醒客', desc: '理性视角帮你区分「真限制」和「假设限」' },
+      { type: 'bad', name: '玄学收藏家', desc: '两个人一起沉迷外在形式，越走越偏' },
+      { type: 'bad', name: '努力怀疑论者', desc: '互相强化「努力没用」的信念，一起躺平' }
+    ],
+    psychRef: '这种心态在心理学上接近「习得性无助」——当一个人反复经历不可控的失败后，会逐渐放弃尝试，即使机会出现也不敢抓住。但好消息是，习得性无助是后天形成的，也就意味着它可以被后天打破。',
+    tip: '下次想说「我没那个命」的时候，先改成「我还没试过」。就差这三个字，人生可能完全不一样。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「顺势而为」的智慧，对环境的感知力远超常人。这种特质如果用对了地方，是极强的共情力和洞察力；但如果用错了，就变成了对命运的过度解读。</p><h4>你的后天卡点</h4><p>最大的卡点不是「命不好」，而是「你觉得自己命不好」。这个念头像一个自我实现的预言——你相信自己做不到，于是真的做不到，然后你说「看吧，我就说命不好」。打破这个循环的钥匙，从来不在命理书里，而在你下一次「试试看」的勇气里。</p><h4>后天造命指南</h4><p>从一件「明知道可能失败但还是想试试」的小事开始。不需要逆天改命，只需要在每一次想退缩的时候，多往前走一步。先天是你的底牌，但出牌的人永远是你自己。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【天选摆烂家】\n「命里有时终须有，命里无时莫强求」\n说的就是我了……\n但测试说，下次想说「我没那个命」的时候\n先改成「我还没试过」\n嗯，好像有点道理。\n你也来测测你是哪种性格？'
+  },
+  mystic_collector: {
+    badge: '改运型 · 木',
+    name: '玄学收藏家',
+    slogan: '「水晶、貔貅、改名、换号——我的改运装备比我的人生还丰富」',
+    coreTrait: '你是那种说到改运就能掏出一整套装备的人。左手招财水晶，右手辟邪貔貅，手机尾号算过吉凶，微信头像找人看过风水。你不是不努力，你是把努力的方向跑偏了——把对人生的掌控感，寄托在了一件件外在的物品和仪式上。',
+    painPoint: '为了转运买过的水晶能凑成一个珠宝盒，收藏的「改运小妙招」比工作文档还多，改过的名字/网名/微信号连自己都记不清。但银行卡余额没有因为貔貅变多，感情也没有因为粉水晶变好。最讽刺的是，你心里清楚这些东西大概率没用，但就是停不下来——因为不做点什么，就更焦虑了。',
+    cause: '你对「掌控命运」有迫切的渴望，但缺乏清晰的行动路径。外在的改运方法成本低、见效快（心理上），成了你最容易抓住的救命稻草。本质上，你是在用「忙忙碌碌的玄学仪式」，代替「真正困难的自我改变」。',
+    gift: '行动力强，想到就会去做；对新事物接受度高，愿意尝试；执行力在线，只要方向对了能出结果。',
+    weak: '容易被外在形式带偏，抓不住核心；急于求成，缺乏长期坚持的耐心；方向感模糊，什么都想试反而什么都不深。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '帮你把行动力用到真正有效的地方' },
+      { type: 'good', name: '本性难移党', desc: '你的行动力能带动对方，对方的深度能稳住你' },
+      { type: 'bad', name: '天选摆烂家', desc: '你忙着改运，对方忙着认命，互相消耗' },
+      { type: 'bad', name: '选择困难星人', desc: '两个人一起纠结「哪个方法更灵」，永远在选' }
+    ],
+    psychRef: '这种行为模式在心理学上叫「控制错觉」——人们倾向于相信自己可以通过某些行为影响随机事件，即使这些行为实际上毫无作用。掷骰子的时候用力掷想要大点数，就是典型的控制错觉。你的水晶和貔貅，本质上也是一样的心理机制。',
+    tip: '把买水晶的钱存下来，把研究改运方法的时间用来学一个新技能。三个月后你会发现，真正转运的从来不是那些摆件。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有强烈的「我命由我不由天」的劲头，这种不甘于被定义的生命力非常珍贵。你愿意为了更好的人生付出行动，这本身就已经赢过了很多人。</p><h4>你的后天卡点</h4><p>问题不在于你「太想改命」，而在于你「太想快速改命」。真正的改变是缓慢的、痛苦的、需要长期坚持的，而外在的玄学仪式是即时的、轻松的、有仪式感的。你选择了后者，不是因为你傻，而是因为后者更容易。但容易的路，往往越走越难。</p><h4>后天造命指南</h4><p>给自己定一个「玄学转化期」：接下来一个月，把花在改运上的时间和金钱，全部投入到一件具体的事上——学一门课、练一个技能、养成一个习惯。一个月后你再回头看，你会发现自己已经悄悄「转运」了。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【玄学收藏家】\n水晶貔貅改名换号，我的改运装备比人生还丰富\n但测试说：把买水晶的钱存下来\n把研究改运的时间用来学新技能\n嗯……好像被说中了什么\n你也来测测你是哪种性格？'
+  },
+  fate_prisoner: {
+    badge: '标签型 · 水',
+    name: '命格囚徒',
+    slogan: '「他们说我是什么命，我就活成了什么命——连我自己都分不清是天生还是被说出来的」',
+    coreTrait: '你对「身份标签」有一种又恨又依赖的复杂感情。被说「八字硬」，你就真的觉得自己不适合亲密关系；被说「安稳命」，你连跳槽的念头都觉得是「违背天意」；被说「性格急躁」，你发脾气的时候心里想的是「没办法，天生的」。你活在一个别人（或自己）给你写好的剧本里，演得太投入，忘了剧本是可以改的。',
+    painPoint: '朋友劝你换个工作，你说「我就是安稳命，折腾不起」；喜欢的人靠近，你先退后一步想「我这种孤寡命别耽误人家」；想尝试新事物，脑子里第一个声音是「这不像我会做的事」。最难过的是，你有时候也会想「如果当初不那么信命，现在会不会不一样」，但这个念头刚冒出来，就被「命该如此」压回去了。',
+    cause: '你的身份认同被命理标签固化了。用标签简化自我认知，就不用面对「突破舒适区」的风险和不确定性。本质上，你是害怕「不符合自己命格」的尝试会带来失败，所以主动待在预设的安全区里——至少在这里，失败了可以说「果然命里没有」，而不是「我不行」。',
+    gift: '自我认知清晰，知道自己的边界在哪；稳定性强，不容易被外界干扰；专注度高，在熟悉的领域能做得很深。',
+    weak: '自我设限严重，不敢走出舒适区；身份固化，拒绝成长和变化；在机会面前用「不像我」劝退自己。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '对方的敢闯敢拼能带你看到新的可能' },
+      { type: 'good', name: '人间清醒客', desc: '帮你区分「真实的自我」和「被贴上的标签」' },
+      { type: 'bad', name: '天选摆烂家', desc: '两个人一起在「认命」里互相安慰，越待越窄' },
+      { type: 'bad', name: '本性难移党', desc: '一个说「命该如此」，一个说「本性难移」，锁死了' }
+    ],
+    psychRef: '这种现象在心理学上叫「标签效应」——当一个人被贴上某种标签后，他会不自觉地按照标签来行事，最终让自己的行为与标签一致。更有意思的是，即使标签是随机贴的（比如随机告诉一些学生「你很有天赋」），也会显著影响他们后续的表现。你的「命格标签」，可能比你想象的更有力量——但那是你给它的力量。',
+    tip: '下次想说「我就是这种人」的时候，在后面加一句「暂时是」。两个字的差别，是给自己留了一扇门。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「忠于自我」的纯粹感，对自己是谁、要什么有很强的感知。这种特质如果用对了，是极强的自我认同和定力；但如果被外界标签绑架，就变成了作茧自缚。</p><h4>你的后天卡点</h4><p>你最大的误区是把「性格特质」等同于「先天定数」。八字里说的性格倾向，更像是一种「出厂设置」——是你的起点，不是你的终点。手机的出厂设置都能改，凭什么你的人生设置就不能？你不是改不了，你是被「改不了」这个念头困住了。</p><h4>后天造命指南</h4><p>做一个「标签撕除实验」：列出三个你最常用来定义自己的标签（比如「我就是社恐」「我就是没耐心」「我就是不适合XX」），然后在接下来一周里，故意做一件「不符合这个标签」的小事。你会发现，标签撕下来之后，下面的你比你以为的要灵活得多。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【命格囚徒】\n「他们说我是什么命，我就活成了什么命」\n被这句话戳中了……\n测试说，下次想说「我就是这种人」的时候\n在后面加一句「暂时是」\n嗯，想试试。\n你也来测测你是哪种性格？'
+  },
+  decision_paralysis: {
+    badge: '决策型 · 火',
+    name: '选择困难星人',
+    slogan: '「人生的每一个岔路口，我都能站到天黑——不是在看路，是在算卦」',
+    coreTrait: '你是那种连中午吃什么都能纠结半小时的人，更别说人生大事了。选专业要算，找工作要算，谈对象要算，连换个城市都要先找人看看「对我运势好不好」。你不是没有想法，你是太害怕「选错」——害怕一步错步步错，害怕自己担不起选错的后果，所以宁愿把选择权交出去，交给「命」。',
+    painPoint: '找工作拿到两个offer，你翻来覆去算到失眠，最后选了「八字说更利事业」的那个，进去之后发现不喜欢，又后悔「当初应该跟着感觉走」；谈恋爱先看八字合不合，合了才敢开始，不合直接pass，后来听说人家过得很好，又开始想「是不是当初太迷信了」。最累的不是选错，是你在选之前就已经把自己耗干了。',
+    cause: '你对「选择成本」有过度的恐惧。希望用「天命」为人生兜底，规避选择的风险。本质上，你是不愿为自己的人生选择承担责任——如果是自己选的，失败了就要怪自己；但如果是「八字说的」，失败了就有了外部的背锅侠。你不是怕选错，你是怕「选错了只能怪自己」。',
+    gift: '考虑问题周全，不容易冲动行事；风险意识强，能避开很多坑；责任感重，做了选择就会认真对待。',
+    weak: '决策内耗严重，错过最佳时机；过度依赖外部判断，不相信自己的直觉；选择后容易后悔，反复复盘折磨自己。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '对方的果断能帮你打破纠结，快速行动' },
+      { type: 'good', name: '人间清醒客', desc: '帮你理清「真正重要的」和「想太多的」' },
+      { type: 'bad', name: '努力怀疑论者', desc: '选之前纠结，选之后后悔，两个人一起内耗' },
+      { type: 'bad', name: '命格囚徒', desc: '一个不敢选，一个选了不敢变，一起困在原地' }
+    ],
+    psychRef: '这种心态在心理学上叫「决策疲劳」和「损失厌恶」的叠加。决策疲劳是说，做太多选择会消耗意志力，导致后面的决策质量下降；损失厌恶是说，人们对「失去」的痛苦感是对「得到」的快乐感的两倍。你之所以纠结，是因为你把「选错的损失」放大了两倍，同时又在反复比较中耗尽了意志力。',
+    tip: '人生没有白走的路，每一步都算数。选错了也没关系，你还有下一次选择的机会。真正毁掉人生的，从来不是选错，而是站在原地不敢选。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「深思熟虑」的智慧，对风险和后果有很强的预判力。这种特质如果用对了地方，是极佳的战略思维和风险管控能力；但如果过度了，就变成了前怕狼后怕虎的决策瘫痪。</p><h4>你的后天卡点</h4><p>你最大的误区是以为「人生有一个最优解」。其实不是的，人生的选择不是数学题，没有标准答案。你选A有A的风景，选B有B的经历，不存在「选对了就一帆风顺，选错了就万劫不复」的情况。真正重要的不是选哪条路，而是选了之后怎么走。你把太多精力花在了「选」上，反而没有精力去「走」。</p><h4>后天造命指南</h4><p>给自己定一个「5分钟决策法」：不重要的事（吃什么、穿什么），5分钟内必须决定，决定了就不许后悔；重要的事（择业、择偶），给自己设定一个明确的截止日期，到了那天必须选，选了就全力以赴去走。你会发现，行动起来之后，纠结自然就少了——因为路是走出来的，不是想出来的。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【选择困难星人】\n人生的每一个岔路口，我都能站到天黑\n不是在看路，是在算卦……\n测试说：真正毁掉人生的，从来不是选错\n而是站在原地不敢选\n被戳中了。\n你也来测测你是哪种性格？'
+  },
+  nature_fixed: {
+    badge: '心性型 · 土',
+    name: '本性难移党',
+    slogan: '「江山易改本性难移——我连改的念头都有，但每次都败给了「天生的」三个字」',
+    coreTrait: '你是那种「道理都懂，但就是改不了」的典型。你清楚地知道自己的性格短板——脾气差、优柔寡断、讨好型人格、容易焦虑——你也知道这些短板正在影响你的人生，但你内心深处有一个根深蒂固的信念：「本性难移」。你试过改变，但坚持不了多久就打回原形，然后更加确信「果然改不了，这就是命」。',
+    painPoint: '发完脾气后悔，后悔完下次还是控制不住；知道讨好型人格让自己受委屈，但别人一开口就还是忍不住答应；试过早起、读书、冥想，每个都坚持不到一周就放弃，然后得出结论「我就是这种人，改不了」。最无力的是，你比谁都清楚问题在哪，但就是觉得「知道了也没用，反正改不了」。',
+    cause: '你对「自我改变」有深层的畏难情绪。将性格等同于先天注定，否定后天心性修炼的可能性。本质上，你是缺乏改变的系统方法与持续动力，把「难改变」当成了「不能改变」。每一次半途而废的改变尝试，都在强化「我果然改不了」的信念，形成了一个越陷越深的负循环。',
+    gift: '自我认知深刻，对自己的优缺点看得很清；感知力强，能敏锐察觉自己和他人的情绪；真诚不做作，不掩饰真实的自己。',
+    weak: '改变意愿强但行动力弱，容易半途而废；自我否定倾向，把「难改」等同于「改不了」；缺乏系统方法，改变全靠意志力硬撑。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '对方的行动力和系统性能带你把改变落地' },
+      { type: 'good', name: '玄学收藏家', desc: '对方的行动力能带动你，你的深度能稳住对方' },
+      { type: 'bad', name: '天选摆烂家', desc: '一个说「改不了」，一个说「没必要改」，一起摆烂' },
+      { type: 'bad', name: '命格囚徒', desc: '「本性难移」+「命该如此」，双重锁死，动弹不得' }
+    ],
+    psychRef: '这种心态在心理学上叫「成长型思维 vs 固定型思维」。固定型思维的人相信能力和性格是天生的、不可改变的，所以他们回避挑战、害怕失败、把努力看作「无能的表现」；而成长型思维的人相信能力和性格是可以通过努力培养的，所以他们拥抱挑战、从失败中学习、把努力看作「成长的途径」。好消息是，思维模式本身也是可以改变的——从固定型到成长型，只需要一个认知的转变。',
+    tip: '不要说「我改不了」，要说「我还没改到」。差一个字，是把终点线往前挪了挪，而不是直接放弃比赛。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「直面自我」的勇气，能诚实地看待自己的短板，这本身就非常难得。很多人连自己的问题都看不到，而你不仅看到了，还想改——这种自我觉察和成长意愿，是你最宝贵的先天财富。</p><h4>你的后天卡点</h4><p>你最大的误区是以为「改变性格」=「变成另一个人」。其实不是的，改变性格不是把你推倒重来，而是在你原有的基础上，一点点调整和优化。急躁的人不是要变成佛系的人，而是学会在发火之前多停三秒；讨好型的人不是要变成自私的人，而是学会在答应之前先问问自己愿不愿意。改变不是非黑即白的，是灰度的、渐进的、每天进步一点点的。</p><h4>后天造命指南</h4><p>选一个你最想改变的性格短板，然后设计一个「微习惯」：不是「我要改掉坏脾气」，而是「下次想发火的时候，先深呼吸三次再说话」；不是「我要不再讨好别人」，而是「下次别人找我帮忙，我先想十分钟再答复」。微习惯小到不可能失败，但坚持下来，就是性格的重塑。性格不是改不了，是你之前的方法太猛了——猛到自己都扛不住。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【本性难移党】\n道理都懂，但就是改不了\n每次都败给「天生的」三个字……\n测试说：不要说「我改不了」\n要说「我还没改到」\n嗯，想从一个微习惯开始试试。\n你也来测测你是哪种性格？'
+  },
+  effort_doubter: {
+    badge: '意义型 · 风',
+    name: '努力怀疑论者',
+    slogan: '「我拼尽全力才到达的终点，可能只是别人的起点——那努力还有什么意义？」',
+    coreTrait: '你是那种「既不甘又无力」的矛盾体。你不是不努力，你是努力过、拼过、付出过，但得到的回报和预期差太远，于是你开始怀疑：「是不是命里没有？」「努力真的有用吗？」「别人轻轻松松就成功了，我拼尽全力还是平庸，是不是我天生就不行？」你在「躺平」和「内卷」之间反复横跳，卷的时候不甘心，躺的时候不安心。',
+    painPoint: '加班到凌晨做的方案，被领导一句「再改改」打回，而同事随便做做就过了，你想「可能我就是没这个天赋」；认真经营了好几年的感情，说散就散，而别人好像随便就能遇到对的人，你想「可能我命里婚姻不顺」；看着同龄人买房买车，自己还在为房租发愁，你想「可能我就是劳碌命」。最难受的是，你连抱怨都觉得矫情——毕竟「比你惨的人多了去了」。',
+    cause: '你的意义感危机来自「优绩主义」的信念崩塌。当「努力就有回报」的信念被现实打破，「命运」就成了最省力的解释。但同时，用命运解释一切也消解了努力的价值，让你陷入既不甘又无力的内耗。本质上，你不是不相信努力，你是不相信「你的努力」会有回报——因为过去的经验告诉你，好像确实没有。',
+    gift: '思考深度强，不容易被鸡汤洗脑；真诚不虚伪，不假装正能量；对公平和正义有强烈的感知，能看到社会的结构性问题。',
+    weak: '容易陷入意义虚无，做什么都觉得「没用」；比较心态重，总拿自己的短板比别人的长处；行动力被怀疑消耗，想得多做得少。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '对方的务实和行动力能帮你从「想」回到「做」' },
+      { type: 'good', name: '人间清醒客', desc: '帮你区分「真的没回报」和「还没到回报的时候」' },
+      { type: 'bad', name: '天选摆烂家', desc: '两个人一起论证「努力没用」，一起躺平到底' },
+      { type: 'bad', name: '选择困难星人', desc: '一个纠结选什么，一个怀疑选了有没有用，内耗翻倍' }
+    ],
+    psychRef: '这种心态在心理学上叫「习得性无助」的进阶版——「意义感丧失」。当一个人反复经历「努力了也没有回报」之后，他不只是放弃尝试，更会开始质疑「努力本身的意义」。这种质疑如果得不到疏导，可能会发展成更严重的存在性焦虑。但好消息是，意义感不是「找到的」，而是「创造的」——你不需要等一个「努力有回报」的证据才开始努力，你可以在努力的过程中，自己赋予它意义。',
+    tip: '努力不一定有回报，但不努力一定很舒服。——开玩笑的。其实努力的意义不一定是「得到」，也可以是「成为」。你在努力中变成的那个更好的自己，本身就是回报。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「求真」的执着，不愿意活在自欺欺人的鸡汤里。你能看到努力和回报之间的不对等，能感受到社会的结构性不公，这种清醒是非常珍贵的。很多人宁愿活在「只要努力就会成功」的幻觉里，而你选择了直面真相——这需要勇气。</p><h4>你的后天卡点</h4><p>你最大的误区是把「回报」定义得太窄了。你以为回报就是升职加薪、感情顺利、买房买车，但其实回报有很多种：你在努力中学会的技能、认识的人、看过的风景、变成的更好的自己，这些都是回报，只是它们不像银行卡余额那样一目了然。你盯着「没有得到的」，却忽略了「已经得到的」，于是越看越觉得努力没用。</p><h4>后天造命指南</h4><p>做一个「回报记账本」：每天晚上花五分钟，写下今天「努力了什么」和「得到了什么」。得到的可以是任何东西——学会了一个新技能、被人夸了一句、心情变好了、身体变健康了。记一个月你会发现，努力的回报比你以为的多得多，只是它们太细碎了，你之前没注意到。人生不是一场「付出多少就必须拿回多少」的交易，它更像是一场播种——你播下的种子，有些会在你意想不到的季节，开出花来。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【努力怀疑论者】\n我拼尽全力才到达的终点\n可能只是别人的起点\n那努力还有什么意义？\n测试说：努力的意义不一定是「得到」\n也可以是「成为」\n……好像被治愈了一点点。\n你也来测测你是哪种性格？'
+  },
+  sober_observer: {
+    badge: '理性型 · 月',
+    name: '人间清醒客',
+    slogan: '「我不是不信命，我是不信「别人说的命」——我的命，得我自己说了算」',
+    coreTrait: '你是那种「介于信与不信之间」的稀有品种。你不会全盘否定命理——你觉得八字里说的性格特质有时候还挺准的，原生家庭和出生格局确实会影响人生起点；但你也不会全盘接受——你不相信「命定不可改」，不觉得买个水晶就能转运，更不会把人生的选择权交给算命先生。你有自己的判断：先天是底色，但怎么画这幅画，是你自己的事。',
+    painPoint: '说你不信吧，你偶尔也会看看星座运势、八字分析，看到说的准的地方也会心里一动；说你信吧，你又从来不会因为「命理说不好」就放弃什么，该努力还是努力，该尝试还是尝试。最「烦」的是，你太清醒了——清醒到不会被玄学割韭菜，也清醒到没法用「命不好」来安慰自己。遇到挫折的时候，别人可以说「这就是命」，你不行，你只能老老实实面对「这是我自己的问题」。',
+    cause: '你对「命运」有成熟而辩证的认知。你承认先天的局限性，但不被它定义；你相信后天的可塑性，但不盲目乐观。这种清醒不是天生的，通常是经历过一些事情之后，自己想明白的。你可能曾经也迷信过、也宿命过、也纠结过，但最终你找到了属于自己的平衡点——「尽人事，听天命」，但「尽人事」在前，「听天命」在后。',
+    gift: '认知成熟，能辩证看待问题；独立思考，不盲从不迷信；心态稳定，不容易被外界带偏；行动力和思考力平衡，既能想清楚也能做出来。',
+    weak: '有时候太理性，缺少一点「不管不顾」的冲劲；清醒带来的孤独感，身边很少有人能同频；偶尔会想「如果糊涂一点会不会更快乐」。',
+    match: [
+      { type: 'good', name: '后天操盘手', desc: '两个理性务实的人在一起，能把日子过得很扎实' },
+      { type: 'good', name: '本性难移党', desc: '你的清醒能帮对方找到改变的方法和信心' },
+      { type: 'bad', name: '玄学收藏家', desc: '你觉得对方在交智商税，对方觉得你太无趣' },
+      { type: 'bad', name: '天选摆烂家', desc: '你想拉对方起来，对方想拉你一起躺，互相拉扯' }
+    ],
+    psychRef: '这种心态在心理学上接近「内控型人格」——相信自己的行为可以影响结果，而不是被外部因素（命运、运气、他人）控制。内控型的人通常更有行动力、更能从失败中恢复、更容易取得成就。但内控型也有一个「副作用」：他们容易把所有失败都归因为自己，从而产生过度的自责和压力。所以健康的内控型，应该是「努力了就接受结果」，而不是「结果不好就是我不够努力」。',
+    tip: '清醒是好事，但偶尔也可以「糊涂」一下。不是每件事都需要想明白，不是每个挫折都需要找原因。有时候，允许自己「不知道为什么」，也是一种智慧。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「独立思考」的基因，不轻易被外界的声音左右。这种特质在这个信息爆炸、各种「大师」「导师」满天飞的时代，尤其珍贵。你不会因为别人说「你命不好」就自我否定，也不会因为别人说「买这个能转运」就乖乖掏钱——你有自己的判断，这是你最强大的先天铠甲。</p><h4>你的后天卡点</h4><p>你最大的「问题」可能不是什么真正的问题，而是「太清醒了」。清醒意味着你不能用「命不好」来安慰自己，不能用「顺其自然」来逃避努力，不能用「大家都这样」来降低标准。遇到挫折的时候，你只能直面「这是我自己的选择和行动导致的」，这种直面有时候是很痛的。但也正是这种痛，让你不断成长——因为你没有借口，只能往前走。</p><h4>后天造命指南</h4><p>你已经走在了正确的路上，不需要什么「改命大法」。你需要的可能只是「允许自己偶尔不那么清醒」——允许自己有时候冲动一下、感性一下、「迷信」一下，不用每件事都算得清清楚楚、明明白白。人生不是一道数学题，不需要每一步都有逻辑和依据。有时候，跟着感觉走，反而能看到理性看不到的风景。你已经足够清醒了，剩下的，就是多一点「不管不顾」的勇气。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【人间清醒客】\n我不是不信命\n我是不信「别人说的命」\n我的命，得我自己说了算\n测试说：你已经足够清醒了\n剩下的，就是多一点「不管不顾」的勇气\n嗯，好像有点道理。\n你也来测测你是哪种性格？'
+  },
+  destiny_maker: {
+    badge: '成长型 · 日',
+    name: '后天操盘手',
+    slogan: '「先天是发给我的牌，但怎么打，我说了算——我命由我不由天」',
+    coreTrait: '你是那种「拿到什么牌都能打好」的人。你承认先天的重要性——出生家庭、天赋秉性、人生起点，这些确实会影响人生的开局；但你更相信后天的力量——选择、努力、心性、行动，这些才是决定人生终局的关键。你不会因为「命不好」就躺平，也不会因为「命好」就懈怠，你始终相信：牌是先天发的，但打牌的人是你自己。',
+    painPoint: '说你没有痛点吧，也不是——你也会累，也会有撑不住的时候，也会在深夜里想「如果我出生在更好的家庭，是不是就不用这么拼了」。但你和别人的区别是，你不会在这种情绪里待太久。抱怨完了、哭完了，第二天该干嘛还是干嘛。最「累」的是，你身边的人可能不理解你——他们觉得你「太拼了」「想太多」「没必要这么累」，但你知道，你不是在跟别人比，你是在跟「那个可能更好的自己」比。',
+    cause: '你对「命运」有最成熟的认知：先天是底色，后天是选择。这种认知通常来自两个方面：一是你可能经历过「通过努力改变了原本以为改不了的事」，这种成功经验给了你信心；二是你可能也经历过「命好但自己不作就浪费了」的反面教材，让你明白先天再好也需要后天经营。你不是天生就这么「正能量」，你是在实践中验证了「后天造命」是真的可行。',
+    gift: '行动力极强，想到就会去做；抗挫力强，失败了能快速恢复；目标感清晰，知道自己要什么；学习能力强，能在实践中不断成长。',
+    weak: '容易过度劳累，不懂得休息和放松；有时候太强势，听不进别人的意见；对自己要求太高，容易产生焦虑和压力；可能忽略身边人的感受，只顾着往前冲。',
+    match: [
+      { type: 'good', name: '人间清醒客', desc: '两个成熟理性的人在一起，互相支持互相成就' },
+      { type: 'good', name: '本性难移党', desc: '你的行动力能带对方改变，对方的深度能让你慢下来' },
+      { type: 'bad', name: '天选摆烂家', desc: '你想拉对方起来，对方想拉你一起躺，互相消耗' },
+      { type: 'bad', name: '玄学收藏家', desc: '你觉得对方在浪费时间，对方觉得你太无趣' }
+    ],
+    psychRef: '这种心态在心理学上是典型的「成长型思维」+「内控型人格」的组合。成长型思维让你相信能力和性格是可以通过努力培养的，内控型人格让你相信自己的行为可以影响结果。这两种特质的组合，是心理学研究中发现的「最容易取得成就」的人格特质组合。但需要注意的是，成长型思维不意味着「只要努力就一定能成功」，而是「努力可以让你变得更好」——成功还需要运气、环境、时机等外部因素。健康的成长型思维，是「尽人事，听天命」，而不是「人定胜天」。',
+    tip: '你已经很厉害了，但记得偶尔停下来看看风景。人生不是一场只有终点的赛跑，路上的花、身边的人、吹过的风，都是人生的一部分。别只顾着赶路，忘了为什么出发。',
+    deepRead: '<h4>你的先天底色</h4><p>你天生带有一种「我命由我不由天」的霸气，这种生命力和掌控感是你最宝贵的先天财富。你可能从小就比同龄人更有主见、更敢闯、更不怕失败——这些特质不是后天学来的，是刻在你骨子里的。但同时，你也要意识到，这种「不服输」的劲儿，如果用过头了，也会变成「刚愎自用」和「过度劳累」。</p><h4>你的后天卡点</h4><p>你最大的「问题」不是不够努力，而是「太努力了」。你把人生当成了一场必须赢的比赛，把自己当成了一台不能停的机器，你不敢休息、不敢放松、不敢「浪费时间」，因为你觉得「停下来就会被超越」。但人生不是比赛，没有终点线，也没有输赢。你不需要「赢」，你只需要「活成你自己」。有时候，停下来不是浪费时间，是为了走更远的路。</p><h4>后天造命指南</h4><p>你已经在「造命」的路上了，不需要更多的方法和技巧。你需要的是「减法」——减少一些不必要的目标，减少一些对自己的苛责，减少一些「必须做到」的执念。给自己定一个「无目的日」：每周有一天，不设目标、不赶进度、不想「应该做什么」，只是随心所欲地做自己想做的事——发呆、散步、看剧、和朋友聊天，什么都可以。你会发现，休息不是浪费时间，是给心灵充电。充满电之后，你才能走得更远、更稳、更快乐。先天是你的底牌，但你不需要把每一张牌都打出去——有时候，留一张在手里，才是真正的高手。</p>',
+    shareText: '测了「先天底色・后天塑造」，我是【后天操盘手】\n先天是发给我的牌\n但怎么打，我说了算\n我命由我不由天\n测试说：你已经很厉害了\n但记得偶尔停下来看看风景\n嗯，会的。\n你也来测测你是哪种性格？'
+  }
+};
+
+/* ===== 25道题目 ===== */
+/* 每题: { text, options: [{text, scores: {维度索引: 分值}}] } */
+/* 维度索引: 0宿命认同度 1改行动力 2标签挣脱度 3决策自主度 4心性可塑性 5意义稳定度 6先天接纳度 7后天掌控感 8挫折复原力 9成长开放度 */
+/* 分值范围 1-5，越高表示该维度越积极（越不宿命、越有行动力等） */
+
+const QUESTIONS = [
+  // ===== 第一部分：先天底色（1-8题）=====
+  {
+    text: '朋友突然约你去一个完全陌生的聚会，你的第一反应是？',
+    options: [
+      { text: '有点紧张，但还是想去看看，说不定有新发现', scores: { 7: 5, 9: 5, 2: 4 } },
+      { text: '先问问都有谁、玩什么，了解清楚再决定', scores: { 3: 4, 6: 4, 5: 3 } },
+      { text: '不太想去，陌生环境让我不自在，还是待在熟悉的圈子里舒服', scores: { 2: 2, 9: 2, 7: 2 } },
+      { text: '看心情吧，心情好就去，心情不好就不去', scores: { 6: 3, 7: 3, 8: 3 } }
+    ]
+  },
+  {
+    text: '你觉得自己的性格更接近以下哪种？',
+    options: [
+      { text: '外向开朗，喜欢热闹，走到哪都能快速融入', scores: { 9: 4, 7: 4, 2: 4 } },
+      { text: '慢热内敛，熟悉之后才放得开，喜欢深度交往', scores: { 6: 4, 4: 3, 5: 3 } },
+      { text: '矛盾体，有时候很外向有时候又很社恐，看状态', scores: { 4: 4, 8: 4, 9: 4 } },
+      { text: '安静独处型，一个人待着最自在，社交很消耗能量', scores: { 6: 3, 2: 2, 9: 2 } }
+    ]
+  },
+  {
+    text: '面对一个有挑战但可能有大回报的机会，你通常会？',
+    options: [
+      { text: '先冲了再说，大不了失败了重来，机会不等人', scores: { 1: 5, 7: 5, 8: 5, 9: 5 } },
+      { text: '仔细评估风险和收益，觉得有把握再出手', scores: { 3: 4, 5: 4, 6: 4 } },
+      { text: '纠结很久，怕失败怕丢人，最后可能就错过了', scores: { 0: 3, 3: 2, 8: 2, 7: 2 } },
+      { text: '看身边有没有人一起，有人陪就敢试，一个人就算了', scores: { 2: 3, 7: 2, 9: 3 } }
+    ]
+  },
+  {
+    text: '你怎么看「原生家庭对人的影响」？',
+    options: [
+      { text: '影响很大，但不是决定性的，后天可以慢慢疗愈和改变', scores: { 4: 5, 6: 5, 7: 4, 9: 4 } },
+      { text: '影响非常大，很多性格和行为模式都是从小形成的，很难改', scores: { 0: 3, 4: 2, 2: 2, 6: 3 } },
+      { text: '有影响，但我更看重自己现在的选择，不想被过去定义', scores: { 7: 5, 2: 5, 9: 5, 1: 4 } },
+      { text: '没想过这个问题，过好当下就行了', scores: { 6: 3, 5: 3, 8: 3 } }
+    ]
+  },
+  {
+    text: '你觉得自己最大的天赋是什么？',
+    options: [
+      { text: '学习能力强，学什么都比较快，适应力好', scores: { 9: 5, 4: 4, 7: 4 } },
+      { text: '共情力强，能敏锐感知别人的情绪，人际关系处理得好', scores: { 6: 4, 5: 4, 2: 3 } },
+      { text: '专注力强，认定一件事就能深耕下去，不容易被干扰', scores: { 1: 4, 5: 4, 4: 3 } },
+      { text: '好像没什么特别突出的天赋，普普通通', scores: { 0: 2, 6: 2, 7: 2, 9: 2 } }
+    ]
+  },
+  {
+    text: '遇到挫折和失败的时候，你通常的第一反应是？',
+    options: [
+      { text: '难过一会儿，然后开始想「下次怎么改进」', scores: { 8: 5, 1: 4, 7: 4, 5: 4 } },
+      { text: '先找原因，是自己的问题还是外部因素，然后对症下药', scores: { 3: 4, 8: 4, 5: 4, 6: 4 } },
+      { text: '觉得「果然我不行」，陷入自我否定，要缓很久才能走出来', scores: { 0: 2, 8: 1, 5: 1, 7: 1 } },
+      { text: '归因为「运气不好」或「时机不对」，等下一次机会', scores: { 0: 3, 8: 2, 6: 3, 5: 2 } }
+    ]
+  },
+  {
+    text: '你对「稳定」和「变化」的态度是？',
+    options: [
+      { text: '稳定很重要，但偶尔的变化和挑战也能让生活更有意思', scores: { 6: 4, 9: 4, 7: 4 } },
+      { text: '稳定压倒一切，不喜欢变数，按部就班最安心', scores: { 2: 2, 9: 2, 6: 3, 7: 2 } },
+      { text: '不喜欢一成不变，人生就是要不断尝试新东西才精彩', scores: { 9: 5, 1: 4, 7: 5, 2: 4 } },
+      { text: '无所谓，生活给我什么我就接受什么', scores: { 6: 3, 0: 2, 7: 2, 8: 3 } }
+    ]
+  },
+  {
+    text: '你觉得自己的人生起点（家庭、学历、资源等）怎么样？',
+    options: [
+      { text: '比上不足比下有余，接受这个起点，然后靠自己往前走', scores: { 6: 5, 7: 4, 5: 4 } },
+      { text: '不太好，有时候会羡慕别人的起点，觉得自己输在了起跑线', scores: { 0: 2, 6: 2, 5: 2, 7: 2 } },
+      { text: '还不错，但我不想靠家里，更想证明自己的能力', scores: { 7: 5, 1: 4, 9: 4 } },
+      { text: '没想过这个问题，起点什么样就什么样呗', scores: { 6: 3, 0: 3, 5: 3, 7: 3 } }
+    ]
+  },
+  // ===== 第二部分：后天卡点（9-25题）=====
+  // 维度一：宿命认知（9-11题）
+  {
+    text: '刷到命理分析说你「财运一般」「婚姻不顺」，你会？',
+    options: [
+      { text: '看看就过了，我的人生凭什么由别人说了算', scores: { 0: 5, 7: 5, 2: 4 } },
+      { text: '心里会咯噔一下，但不会太当真，该干嘛还是干嘛', scores: { 0: 4, 6: 4, 7: 3 } },
+      { text: '会对号入座，觉得说得好像有点准，然后开始担心', scores: { 0: 2, 5: 2, 7: 2 } },
+      { text: '直接放弃相关尝试，信奉「命里没有莫强求」', scores: { 0: 1, 1: 1, 7: 1, 9: 1 } }
+    ]
+  },
+  {
+    text: '遇到事业低谷或感情失败时，你的第一想法是？',
+    options: [
+      { text: '分析原因，找解决办法，相信低谷只是暂时的', scores: { 8: 5, 1: 5, 3: 4, 5: 4 } },
+      { text: '会难过，但不会归因为「命不好」，只是运气或方法问题', scores: { 0: 4, 8: 4, 6: 4, 5: 3 } },
+      { text: '忍不住想「我命就这样」，用宿命论解释困境', scores: { 0: 2, 8: 2, 5: 2, 1: 2 } },
+      { text: '觉得「再努力也没用」，干脆躺平算了', scores: { 0: 1, 1: 1, 5: 1, 8: 1 } }
+    ]
+  },
+  {
+    text: '看到别人取得成就时，你通常会想？',
+    options: [
+      { text: '人家肯定付出了很多努力，我也要加油', scores: { 1: 5, 5: 5, 7: 4, 9: 4 } },
+      { text: '有运气成分，但更多的是人家的选择和努力', scores: { 0: 4, 5: 4, 6: 4, 3: 4 } },
+      { text: '人家八字好/命好，比不了', scores: { 0: 2, 5: 2, 1: 2, 7: 2 } },
+      { text: '努力不如命好，我再怎么拼也没用', scores: { 0: 1, 5: 1, 1: 1, 7: 1 } }
+    ]
+  },
+  // 维度二：改运方法（12-14题）
+  {
+    text: '你有没有为了「改运」做过以下哪些事？',
+    options: [
+      { text: '都没做过，我觉得改运靠的是行动不是这些', scores: { 1: 5, 7: 5, 0: 4 } },
+      { text: '偶尔看看运势，但不会真的去买东西或改名字', scores: { 1: 4, 7: 4, 0: 3 } },
+      { text: '买过水晶/貔貅/风水摆件，或试过改名/换手机号', scores: { 1: 2, 7: 2, 0: 3 } },
+      { text: '以上都试过，还收藏了很多「改运小妙招」', scores: { 1: 1, 7: 1, 0: 2 } }
+    ]
+  },
+  {
+    text: '如果你想改变现状，但不知道从哪入手，你会？',
+    options: [
+      { text: '先从一件小事做起，边做边找方向', scores: { 1: 5, 7: 5, 9: 5, 8: 4 } },
+      { text: '学习相关知识，请教有经验的人，制定计划再行动', scores: { 1: 4, 3: 4, 7: 4, 5: 4 } },
+      { text: '到处搜「普通人怎么改命」，收藏一堆方法但很少实践', scores: { 1: 2, 7: 2, 9: 2 } },
+      { text: '不知道该往哪个方向努力，害怕努力错方向，干脆不动', scores: { 1: 1, 3: 1, 7: 1, 9: 1 } }
+    ]
+  },
+  {
+    text: '你怎么看「风水摆件、转运饰品」这类东西？',
+    options: [
+      { text: '智商税，真正能改变人生的只有自己的行动', scores: { 1: 5, 7: 5, 0: 5 } },
+      { text: '心理安慰作用吧，戴个开心也行，但不会指望它真改命', scores: { 1: 4, 6: 4, 7: 3 } },
+      { text: '宁可信其有，万一有用呢，戴着也没坏处', scores: { 1: 2, 0: 3, 7: 2 } },
+      { text: '很相信，觉得这些东西确实能影响运势', scores: { 1: 1, 0: 2, 7: 1 } }
+    ]
+  },
+  // 维度三：身份标签（15-17题）
+  {
+    text: '如果有人说你「八字硬、性格强势，不适合亲密关系」，你会？',
+    options: [
+      { text: '嗤之以鼻，我的感情我做主，跟八字有什么关系', scores: { 2: 5, 7: 5, 9: 4 } },
+      { text: '不会当真，但可能会稍微注意一下自己的脾气', scores: { 2: 4, 4: 4, 6: 4 } },
+      { text: '心里会有点介意，不自觉地开始回避感情', scores: { 2: 2, 7: 2, 9: 2 } },
+      { text: '深以为然，给自己贴上「孤寡命」的标签，主动回避感情', scores: { 2: 1, 7: 1, 9: 1 } }
+    ]
+  },
+  {
+    text: '如果你厌倦了当前的工作生活，想跳槽或转行，你会担心什么？',
+    options: [
+      { text: '没什么好担心的，想做就去做，大不了重新开始', scores: { 2: 5, 9: 5, 1: 5, 7: 5 } },
+      { text: '会担心能不能适应新环境，但不会因为「命格」而放弃', scores: { 2: 4, 9: 4, 6: 4, 8: 4 } },
+      { text: '会想「我是不是安稳命，不适合折腾」，犹豫很久', scores: { 2: 2, 9: 2, 0: 3, 7: 2 } },
+      { text: '害怕「违背命格会出事」，最终还是不敢动', scores: { 2: 1, 9: 1, 0: 2, 7: 1 } }
+    ]
+  },
+  {
+    text: '你觉得自己的性格特质（比如急躁、敏感、优柔）是可以改变的吗？',
+    options: [
+      { text: '当然可以，性格不是一成不变的，后天可以慢慢调整', scores: { 4: 5, 2: 5, 9: 5, 1: 4 } },
+      { text: '很难，但如果有意识地去改，还是能有所改善', scores: { 4: 4, 2: 4, 1: 3, 9: 3 } },
+      { text: '江山易改本性难移，基本改不了', scores: { 4: 2, 2: 2, 1: 2, 9: 2 } },
+      { text: '这是天生的，改不了，也没必要改', scores: { 4: 1, 2: 1, 1: 1, 9: 1 } }
+    ]
+  },
+  // 维度四：决策选择（18-20题）
+  {
+    text: '找工作、谈对象、选行业时，你会先找人算「合不合八字」吗？',
+    options: [
+      { text: '不会，人生选择靠自己的判断和感受，不算这些', scores: { 3: 5, 7: 5, 0: 4 } },
+      { text: '偶尔好奇会看看，但不会让它影响我的决定', scores: { 3: 4, 7: 4, 0: 3 } },
+      { text: '会参考一下，如果八字说不好，心里会很纠结', scores: { 3: 2, 7: 2, 0: 3 } },
+      { text: '会，重要选择一定要先算，按八字建议来选才安心', scores: { 3: 1, 7: 1, 0: 2 } }
+    ]
+  },
+  {
+    text: '面临重大选择时，你通常的状态是？',
+    options: [
+      { text: '想清楚就果断决定，选了就不后悔，全力以赴去做', scores: { 3: 5, 8: 5, 7: 5, 1: 4 } },
+      { text: '会纠结一段时间，但最终会自己做决定并承担后果', scores: { 3: 4, 8: 4, 7: 4, 6: 4 } },
+      { text: '反复焦虑，总担心选错，犹犹豫豫错过最佳时机', scores: { 3: 2, 8: 2, 7: 2, 5: 2 } },
+      { text: '不敢自己做决定，希望别人（或命理）帮我选', scores: { 3: 1, 7: 1, 8: 1, 0: 2 } }
+    ]
+  },
+  {
+    text: '做出选择后如果遇到不顺，你会？',
+    options: [
+      { text: '想办法解决问题，而不是后悔当初的选择', scores: { 8: 5, 3: 5, 5: 5, 7: 4 } },
+      { text: '会短暂反思，但很快调整心态，继续往前走', scores: { 8: 4, 3: 4, 5: 4, 6: 4 } },
+      { text: '会后悔「当初没按八字的建议选」，反复复盘内耗', scores: { 8: 2, 3: 2, 5: 2, 0: 3 } },
+      { text: '陷入自我指责，觉得都是自己的错，很长时间走不出来', scores: { 8: 1, 5: 1, 3: 1, 7: 1 } }
+    ]
+  },
+  // 维度五：心性行为（21-22题）
+  {
+    text: '你知道自己的性格短板（如脾气差、讨好型、优柔寡断）正在影响人生，你会？',
+    options: [
+      { text: '有意识地去调整和改变，虽然难但一直在努力', scores: { 4: 5, 1: 5, 7: 4, 9: 4 } },
+      { text: '想改，但不知道从哪入手，偶尔尝试一下又放弃', scores: { 4: 3, 1: 2, 7: 2, 9: 2 } },
+      { text: '归因为「八字里带的性格，改不了」，放弃改变', scores: { 4: 1, 2: 2, 0: 2, 7: 1 } },
+      { text: '觉得这就是真实的我，没必要改，接受就好', scores: { 4: 2, 6: 3, 2: 2, 7: 2 } }
+    ]
+  },
+  {
+    text: '你尝试过改变自己的性格吗？结果怎么样？',
+    options: [
+      { text: '尝试过，而且确实有改变，虽然过程很慢', scores: { 4: 5, 1: 5, 8: 5, 9: 4 } },
+      { text: '尝试过，但坚持不了多久就打回原形了', scores: { 4: 2, 1: 2, 8: 2, 9: 2 } },
+      { text: '没认真尝试过，觉得改不了，没必要白费力气', scores: { 4: 1, 1: 1, 9: 1, 2: 1 } },
+      { text: '正在尝试中，希望能慢慢变好', scores: { 4: 4, 1: 4, 8: 4, 9: 4 } }
+    ]
+  },
+  // 维度六：价值意义（23-25题）
+  {
+    text: '如果你付出了很多努力，却没有得到预期的回报，你会？',
+    options: [
+      { text: '调整方向和方法，继续努力，相信回报会来的', scores: { 5: 5, 1: 5, 8: 5, 7: 4 } },
+      { text: '会失落，但不会否定努力的意义，可能只是时机未到', scores: { 5: 4, 8: 4, 6: 4, 7: 3 } },
+      { text: '开始怀疑「是不是命里没有」，逐渐失去动力', scores: { 5: 2, 0: 3, 8: 2, 1: 2 } },
+      { text: '觉得「努力不如命好」，干脆躺平不努力了', scores: { 5: 1, 0: 2, 1: 1, 8: 1 } }
+    ]
+  },
+  {
+    text: '看着别人轻轻松松成功，自己拼尽全力却平庸，你会？',
+    options: [
+      { text: '每个人节奏不同，专注自己的成长就好', scores: { 5: 5, 6: 5, 7: 4, 9: 4 } },
+      { text: '会羡慕，但不会否定自己的价值，继续走自己的路', scores: { 5: 4, 6: 4, 7: 3, 8: 4 } },
+      { text: '产生「努力不如命好」的挫败感，质疑奋斗的价值', scores: { 5: 2, 0: 3, 7: 2, 1: 2 } },
+      { text: '觉得自己就是劳碌命，再干也没用，逐渐躺平', scores: { 5: 1, 0: 2, 1: 1, 7: 1 } }
+    ]
+  },
+  {
+    text: '你觉得「努力」和「命运」的关系是？',
+    options: [
+      { text: '命运决定起点，但努力决定终点，后天选择更重要', scores: { 7: 5, 1: 5, 5: 5, 9: 5, 0: 4 } },
+      { text: '三分天注定七分靠打拼，努力还是有用的', scores: { 7: 4, 1: 4, 5: 4, 6: 4, 0: 3 } },
+      { text: '命里有时终须有，命里无时莫强求，努力也改变不了什么', scores: { 0: 2, 1: 1, 5: 2, 7: 1 } },
+      { text: '说不清，有时候觉得努力有用，有时候觉得都是命', scores: { 0: 3, 5: 3, 7: 2, 6: 3 } }
+    ]
+  }
+];
+
+/* ===== 星空背景生成 ===== */
+function createStars() {
+  const container = document.getElementById('stars');
+  if (!container) return;
+  container.innerHTML = '';
+  const count = window.innerWidth < 768 ? 60 : 100;
+  for (let i = 0; i < count; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = Math.random() * 2 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.setProperty('--dur', (Math.random() * 3 + 2) + 's');
+    star.style.animationDelay = Math.random() * 3 + 's';
+    container.appendChild(star);
+  }
+}
+
+/* ===== 视图切换 ===== */
+function showView(viewId) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById(viewId);
+  if (target) target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* ===== 开始测试 ===== */
+function startQuiz() {
+  currentQuestion = 0;
+  answers = [];
+  showView('view-quiz');
+  renderQuestion();
+}
+
+/* ===== 渲染题目 ===== */
+function renderQuestion() {
+  const q = QUESTIONS[currentQuestion];
+  if (!q) return;
+
+  document.getElementById('question-text').textContent = q.text;
+  document.getElementById('current-num').textContent = currentQuestion + 1;
+  document.getElementById('progress-fill').style.width = ((currentQuestion + 1) / QUESTIONS.length * 100) + '%';
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  const labels = ['A', 'B', 'C', 'D'];
+
+  q.options.forEach((opt, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-card';
+    if (answers[currentQuestion] === idx) btn.classList.add('selected');
+    btn.innerHTML = '<span class="option-label">' + labels[idx] + '</span>' + opt.text;
+    btn.onclick = () => selectOption(idx);
+    list.appendChild(btn);
+  });
+
+  // 返回按钮状态
+  document.getElementById('back-btn').disabled = currentQuestion === 0;
+}
+
+/* ===== 选择选项 ===== */
+function selectOption(idx) {
+  answers[currentQuestion] = idx;
+
+  // 更新选中状态
+  document.querySelectorAll('.option-card').forEach((card, i) => {
+    card.classList.toggle('selected', i === idx);
+  });
+
+  // 延迟进入下一题
+  setTimeout(() => {
+    if (currentQuestion < QUESTIONS.length - 1) {
+      currentQuestion++;
+      renderQuestion();
+    } else {
+      showLoading();
+    }
+  }, 300);
+}
+
+/* ===== 返回上一题 ===== */
+function goBack() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  }
+}
+
+/* ===== 显示加载页 ===== */
+function showLoading() {
+  showView('view-loading');
+  setTimeout(() => {
+    calculateResult();
+    showView('view-result');
+    renderResult();
+  }, 2500);
+}
+
+/* ===== 计算结果 ===== */
+function calculateResult() {
+  // 初始化十维分数
+  const scores = new Array(DIMENSIONS.length).fill(0);
+  const count = new Array(DIMENSIONS.length).fill(0);
+
+  // 累加每道题的分数
+  answers.forEach((ansIdx, qIdx) => {
+    const q = QUESTIONS[qIdx];
+    if (!q || ansIdx === undefined) return;
+    const opt = q.options[ansIdx];
+    if (!opt || !opt.scores) return;
+    for (const [dimIdx, score] of Object.entries(opt.scores)) {
+      scores[parseInt(dimIdx)] += score;
+      count[parseInt(dimIdx)]++;
+    }
+  });
+
+  // 计算平均分（0-100）
+  const finalScores = scores.map((s, i) => {
+    if (count[i] === 0) return 50;
+    return Math.round((s / count[i] / 5) * 100);
+  });
+
+  // 判定类型
+  const type = determineType(finalScores);
+  resultData = { type: type, scores: finalScores };
+}
+
+/* ===== 判定命格类型 ===== */
+function determineType(scores) {
+  // scores: [宿命认同度(越高越不宿命), 改行动力, 标签挣脱度, 决策自主度, 心性可塑性, 意义稳定度, 先天接纳度, 后天掌控感, 挫折复原力, 成长开放度]
+  const fatalism = 100 - scores[0]; // 宿命程度（越高越宿命）
+  const action = scores[1];
+  const labelFree = scores[2];
+  const decision = scores[3];
+  const nature = scores[4];
+  const meaning = scores[5];
+  const control = scores[7];
+  const growth = scores[9];
+
+  // 计算各类型匹配度
+  const typeScores = {
+    fated_lazy: fatalism * 1.5 + (100 - action) * 1.2 + (100 - meaning) * 0.8, // 天选摆烂家
+    mystic_collector: action * 0.5 + fatalism * 0.5 + (100 - control) * 1.0, // 玄学收藏家（有行动力但方向偏）
+    fate_prisoner: (100 - labelFree) * 1.5 + (100 - nature) * 1.0 + fatalism * 0.5, // 命格囚徒
+    decision_paralysis: (100 - decision) * 1.5 + fatalism * 0.8 + (100 - control) * 0.5, // 选择困难星人
+    nature_fixed: (100 - nature) * 1.5 + (100 - action) * 0.8 + fatalism * 0.5, // 本性难移党
+    effort_doubter: (100 - meaning) * 1.5 + (100 - scores[8]) * 0.8 + fatalism * 0.5, // 努力怀疑论者
+    sober_observer: Math.abs(scores[0] - 60) * -1 + scores[6] * 0.5 + scores[3] * 0.5, // 人间清醒客（中间值）
+    destiny_maker: action * 1.2 + control * 1.2 + growth * 1.0 + nature * 0.8 // 后天操盘手
+  };
+
+  // 特殊规则：如果整体都很高（>70），归为后天操盘手
+  const avg = (action + control + growth + nature + scores[8] + meaning) / 6;
+  if (avg > 72 && scores[0] > 60) {
+    return 'destiny_maker';
+  }
+
+  // 如果宿命认同度很高（>70，即很不宿命）且其他维度中等，归为人间清醒客
+  if (scores[0] > 65 && avg > 55 && avg < 72) {
+    return 'sober_observer';
+  }
+
+  // 取匹配度最高的类型
+  let maxType = 'fated_lazy';
+  let maxScore = -Infinity;
+  for (const [type, score] of Object.entries(typeScores)) {
+    if (score > maxScore) {
+      maxScore = score;
+      maxType = type;
+    }
+  }
+
+  return maxType;
+}
+
+/* ===== 渲染结果 ===== */
+function renderResult() {
+  if (!resultData) return;
+  const type = TYPES[resultData.type];
+  if (!type) return;
+
+  // 头部
+  document.getElementById('result-badge').textContent = type.badge;
+  document.getElementById('result-name').textContent = type.name;
+  document.getElementById('result-slogan').textContent = type.slogan;
+
+  // 核心特质、痛点、原因
+  document.getElementById('core-trait').innerHTML = '<p>' + type.coreTrait + '</p>';
+  document.getElementById('pain-point').innerHTML = '<p>' + type.painPoint + '</p>';
+  document.getElementById('cause').innerHTML = '<p>' + type.cause + '</p>';
+
+  // 天赋与短板
+  document.getElementById('trait-gift').textContent = type.gift;
+  document.getElementById('trait-weak').textContent = type.weak;
+
+  // 适配/避雷
+  const matchList = document.getElementById('match-list');
+  matchList.innerHTML = '';
+  type.match.forEach(m => {
+    const item = document.createElement('div');
+    item.className = 'match-item ' + m.type;
+    item.innerHTML = '<span class="match-tag">' + (m.type === 'good' ? '适配' : '避雷') + '</span>' +
+      '<div><div class="match-name">' + m.name + '</div><div class="match-desc">' + m.desc + '</div></div>';
+    matchList.appendChild(item);
+  });
+
+  // 深度解读
+  document.getElementById('deep-read').innerHTML = type.deepRead;
+
+  // 心理学参考
+  document.getElementById('psych-ref').innerHTML = '<p>' + type.psychRef + '</p>';
+
+  // 心理提示
+  document.getElementById('psych-tip').textContent = type.tip;
+
+  // 分享文案
+  document.getElementById('share-text').textContent = type.shareText;
+
+  // 维度得分明细
+  renderScoreList();
+
+  // 雷达图
+  setTimeout(() => renderRadar(), 100);
+}
+
+/* ===== 渲染维度得分明细 ===== */
+function renderScoreList() {
+  const list = document.getElementById('score-list');
+  list.innerHTML = '';
+  const colors = [
+    'linear-gradient(90deg, #c8963e, #d4a84f)',
+    'linear-gradient(90deg, #9b7bb8, #b090c8)',
+    'linear-gradient(90deg, #c97a8e, #d890a0)',
+    'linear-gradient(90deg, #6a9ab8, #80b0c8)',
+    'linear-gradient(90deg, #5aa888, #70b898)',
+    'linear-gradient(90deg, #b8a060, #c8b070)',
+    'linear-gradient(90deg, #a080c0, #b090c8)',
+    'linear-gradient(90deg, #c07070, #c88080)',
+    'linear-gradient(90deg, #60a8a8, #70b8b8)',
+    'linear-gradient(90deg, #b89860, #c8a870)'
+  ];
+
+  resultData.scores.forEach((score, i) => {
+    const item = document.createElement('div');
+    item.className = 'score-item';
+    item.innerHTML = '<span class="score-name">' + DIMENSIONS[i].name + '</span>' +
+      '<div class="score-bar-wrap"><div class="score-bar" style="width:0%;background:' + colors[i] + '"></div></div>' +
+      '<span class="score-value">' + score + '</span>';
+    list.appendChild(item);
+
+    // 动画填充
+    setTimeout(() => {
+      item.querySelector('.score-bar').style.width = score + '%';
+    }, 200 + i * 80);
+  });
+}
+
+/* ===== 渲染雷达图 ===== */
+function renderRadar() {
+  try {
+    const container = document.getElementById('radar-chart');
+    if (!container) return;
+
+    // 安全销毁已有实例
+    if (radarChart) {
+      try {
+        radarChart.dispose();
+      } catch (e) {
+        console.warn('雷达图销毁失败:', e);
+      }
+      radarChart = null;
+    }
+
+    radarChart = echarts.init(container);
+
+    const option = {
+      backgroundColor: 'transparent',
+      tooltip: {
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        borderColor: 'rgba(200, 160, 90, 0.4)',
+        borderWidth: 1,
+        textStyle: { color: '#2d2a26', fontSize: 12 },
+        formatter: function(params) {
+          let str = params.name + '<br/>';
+          params.value.forEach((v, i) => {
+            str += DIMENSIONS[i].name + ': ' + v + '<br/>';
+          });
+          return str;
+        }
+      },
+      radar: {
+        indicator: DIMENSIONS.map(d => ({ name: d.name, max: 100 })),
+        shape: 'polygon',
+        splitNumber: 4,
+        axisName: {
+          color: '#6b6560',
+          fontSize: 11,
+          fontWeight: 500
+        },
+        splitLine: {
+          lineStyle: { color: 'rgba(200, 160, 90, 0.15)' }
+        },
+        splitArea: {
+          areaStyle: {
+            color: ['rgba(200, 160, 90, 0.03)', 'rgba(155, 123, 184, 0.04)']
+          }
+        },
+        axisLine: {
+          lineStyle: { color: 'rgba(200, 160, 90, 0.15)' }
+        }
+      },
+      series: [{
+        type: 'radar',
+        data: [{
+          value: resultData.scores,
+          name: '性格维度',
+          symbol: 'circle',
+          symbolSize: 6,
+          itemStyle: { color: '#c8963e' },
+          lineStyle: { color: '#c8963e', width: 2 },
+          areaStyle: {
+            color: new echarts.graphic.RadialGradient(0.5, 0.5, 1, [
+              { offset: 0, color: 'rgba(200, 160, 90, 0.35)' },
+              { offset: 1, color: 'rgba(155, 123, 184, 0.12)' }
+            ])
+          }
+        }]
+      }]
+    };
+
+    radarChart.setOption(option);
+
+    // 响应式
+    window.addEventListener('resize', () => {
+      if (radarChart) {
+        try { radarChart.resize(); } catch (e) {}
+      }
+    });
+  } catch (e) {
+    console.error('雷达图渲染异常:', e);
+    // 错误兜底：显示文字版
+    const container = document.getElementById('radar-chart');
+    if (container) {
+      container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#6b6560;font-size:14px;">雷达图加载失败，但你的性格数据已在下方明细中呈现</div>';
+    }
+  }
+}
+
+/* ===== 一键复制 ===== */
+function copyResult() {
+  if (!resultData) return;
+  const type = TYPES[resultData.type];
+  const text = type.shareText + '\n\n---\n【性格十维】\n' +
+    DIMENSIONS.map((d, i) => d.name + ': ' + resultData.scores[i]).join('\n');
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('已复制到剪贴板');
+    }).catch(() => {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    showToast('已复制到剪贴板');
+  } catch (e) {
+    showToast('复制失败，请手动复制');
+  }
+  document.body.removeChild(ta);
+}
+
+/* ===== 保存PNG ===== */
+function savePNG() {
+  const target = document.getElementById('result-capture');
+  if (!target) return;
+
+  showToast('正在生成图片...');
+
+  // 先滚动到顶部确保完整捕获
+  window.scrollTo(0, 0);
+
+  setTimeout(() => {
+    html2canvas(target, {
+      backgroundColor: '#f5f0e8',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      width: target.scrollWidth,
+      height: target.scrollHeight
+    }).then(canvas => {
+      try {
+        const link = document.createElement('a');
+        link.download = '我的性格报告_' + TYPES[resultData.type].name + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('图片已保存');
+      } catch (e) {
+        showToast('保存失败，请截图保存');
+      }
+    }).catch(err => {
+      console.error('截图失败:', err);
+      showToast('生成失败，请手动截图');
+    });
+  }, 300);
+}
+
+/* ===== Toast提示 ===== */
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 1800);
+}
+
+/* ===== 重新测试 ===== */
+function restartQuiz() {
+  // 彻底清空全局状态
+  currentQuestion = 0;
+  answers = [];
+  resultData = null;
+
+  // 销毁雷达图
+  if (radarChart) {
+    try { radarChart.dispose(); } catch (e) {}
+    radarChart = null;
+  }
+
+  // 清空DOM残留
+  const scoreList = document.getElementById('score-list');
+  if (scoreList) scoreList.innerHTML = '';
+  const matchList = document.getElementById('match-list');
+  if (matchList) matchList.innerHTML = '';
+
+  // 回到首页
+  showView('view-home');
+}
+
+/* ===== 初始化 ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  createStars();
+  showView('view-home');
+});
+
+// 窗口大小改变时重新生成星星
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(createStars, 300);
+});
+</script>
+</body>
+</html>
